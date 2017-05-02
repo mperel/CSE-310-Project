@@ -19,9 +19,25 @@ class TCPClient {
 		// create input stream attached to socket
 		BufferedReader inFromServer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 	
+		String username = null;
+		int playerNumber = 0;
 		while (!sentence.equals("exit")) {
 			System.out.print("Input: ");
 			sentence = inFromUser.readLine();
+			
+			if (sentence.contains("login ") && username == null) {
+				username = sentence.substring(6);
+			} else if (sentence.contains("login ") && username != null) {
+				sentence = "loginerror";
+			}
+			
+			if (sentence.contains("place ")) {
+				String temp;
+				if (playerNumber == 1) temp = "1";
+				else temp = "2";
+				temp += sentence;
+				sentence = temp;
+			}
 		
 			// send line to server
 			outToServer.writeBytes(sentence + '\n');
@@ -49,6 +65,16 @@ class TCPClient {
 			} else if (modifiedSentence.equals("exit")) {
 				sentence = "exit";
 				System.out.println("Exited.");
+			} else if (modifiedSentence.contains("player1")) {
+				playerNumber = 1;
+				System.out.println("Logged in as Player 1.");
+				System.out.println("Please wait for another player.");
+			} else if (modifiedSentence.contains("player2")) {
+				playerNumber = 2;
+				System.out.println("Logged in as Player 2.");
+			} else if (modifiedSentence.contains("Username already is use")) {
+				username = null;
+				System.out.println(modifiedSentence);
 			} else System.out.println(modifiedSentence);
 			System.out.println();
 		}
