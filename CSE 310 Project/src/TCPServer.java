@@ -48,7 +48,7 @@ public class TCPServer implements Runnable {
 				// read in line from socket
 				clientSentence = inFromClient.readLine();
 						
-				if (clientSentence == null) break;
+				// if (clientSentence == null) break;
 				outputSentence = "";
 				
 				String tempid = clientSentence.substring(0, 3);
@@ -58,6 +58,7 @@ public class TCPServer implements Runnable {
 						outputSentence = "firsttime" + allGames.get(i).playerOne.name + "\n";
 						allGames.get(i).firstTime = false;
 						firstTimeFound = true;
+						allGames.get(i).playerOne.out.writeBytes("ready\n");
 					}
 				}
 				

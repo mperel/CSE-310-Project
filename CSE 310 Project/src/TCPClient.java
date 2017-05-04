@@ -144,6 +144,11 @@ class TCPClient {
 			} else if (modifiedSentence.contains("Game with ")) {
 				System.out.println(modifiedSentence);
 				gameBegun = true;
+				System.out.println("Waiting for input from opponent...");
+				modifiedSentence = "";
+				while (!modifiedSentence.contains("ready")) {
+					modifiedSentence = inFromServer.readLine();
+				}
 			} else if (modifiedSentence.contains("firsttime")) {
 				gameBegun = true;
 				System.out.println("Game with " + modifiedSentence.substring(9) + " has begun.");
