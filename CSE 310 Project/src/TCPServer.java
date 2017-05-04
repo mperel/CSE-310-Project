@@ -7,6 +7,9 @@ public class TCPServer implements Runnable {
 	static String[] board = new String[9];
 	static int whosTurn = 0;
 	static String playerOneUsername = "";
+	static String playerTwoUsername = "";
+	static DataOutputStream playerOneOutput = null;
+	static DataOutputStream playerTwoOutput = null;
 	
 	TCPServer(Socket socket) {
 		this.socket = socket;
@@ -32,6 +35,8 @@ public class TCPServer implements Runnable {
 	
 			// create output stream attached to socket
 			DataOutputStream outToClient = new DataOutputStream(socket.getOutputStream());
+			if (playerOneOutput == null) playerOneOutput = outToClient;
+			else if (playerTwoOutput == null) playerTwoOutput = outToClient;
 			
 			while (true) {
 				// read in line from socket
@@ -57,6 +62,8 @@ public class TCPServer implements Runnable {
 							else {
 								outputSentence = "player2\n";
 								whosTurn = 1;
+								playerOneOutput.writeBytes("begin\n");
+								playerTwoUsername = clientSentence.substring(6);
 							}
 						}
 						else outputSentence = "There are already two players connected.\n";
@@ -92,7 +99,7 @@ public class TCPServer implements Runnable {
 										|| (board[2].equals("X") && board[5].equals("X") && board[8].equals("X"))
 										|| (board[0].equals("X") && board[4].equals("X") && board[8].equals("X"))
 										|| (board[2].equals("X") && board[4].equals("X") && board[6].equals("X"))) {
-									outputSentence = "Player 1 is the winner.\n";
+									outputSentence = "Player 2 is the winner.\n";
 									gameOver = true;
 								} else if ((board[0].equals("O") && board[1].equals("O") && board[2].equals("O"))
 										|| (board[3].equals("O") && board[4].equals("O") && board[5].equals("O"))
@@ -102,7 +109,7 @@ public class TCPServer implements Runnable {
 										|| (board[2].equals("O") && board[5].equals("O") && board[8].equals("O"))
 										|| (board[0].equals("O") && board[4].equals("O") && board[8].equals("O"))
 										|| (board[2].equals("O") && board[4].equals("O") && board[6].equals("O"))) {
-									outputSentence = "Player 2 is the winner.\n";
+									outputSentence = "Player 1 is the winner.\n";
 									gameOver = true;
 								} else {
 									outputSentence = "It's a draw.\n";
@@ -120,6 +127,25 @@ public class TCPServer implements Runnable {
 										outputSentence += board[i];
 									}
 									outputSentence += "\n";
+									if (whosTurn == 1) playerOneOutput.writeBytes(outputSentence);
+									else playerTwoOutput.writeBytes(outputSentence);
+								} else {
+									String result = "";
+									if (outputSentence.contains("Player 1")) result = "p1";
+									else if (outputSentence.contains("Player 2")) result = "p2";
+									else result = "dw";
+									outputSentence = "board";
+									for (int i = 0; i < 9; i++) {
+										outputSentence += board[i];
+									}
+									for (int i = 0; i < 9; i++) board[i] = ".";	// reset board
+									outputSentence = outputSentence + result;
+									if (result.equals("p1"))
+										outputSentence = outputSentence + playerOneUsername + "\n";
+									else if (result.equals("p2"))
+										outputSentence = outputSentence + playerTwoUsername + "\n";
+									if (whosTurn == 1) playerOneOutput.writeBytes(outputSentence);
+									else playerTwoOutput.writeBytes(outputSentence);
 								}
 							}
 						}
@@ -134,7 +160,13 @@ public class TCPServer implements Runnable {
 						} else outputSentence = "You must wait for another player.\n";
 					}
 				}
-				else if (clientSentence.equals("exit")) outputSentence = "exit\n";
+				else if (clientSentence.equals("exit")) {
+					outputSentence = "exit\n";
+					if (numPlayers == 2) {
+						if (whosTurn == 2) playerOneOutput.writeBytes("boardexit\n");
+						else playerTwoOutput.writeBytes("boardexit\n");
+					}
+				}
 				else outputSentence = "Invalid command.\n";
 				
 				// write out line to socket

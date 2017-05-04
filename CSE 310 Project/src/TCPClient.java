@@ -21,7 +21,45 @@ class TCPClient {
 	
 		String username = null;
 		int playerNumber = 0;
+		boolean gameBegun = false;
+		boolean myTurn = false;
 		while (!sentence.equals("exit")) {
+			if (gameBegun && !myTurn) {
+				System.out.println("Waiting for opponent to move...");
+				modifiedSentence = "";
+				while (!modifiedSentence.contains("board")) {
+					modifiedSentence = inFromServer.readLine();
+				}
+				if (modifiedSentence.contains("exit")) {
+					System.out.println("\nThe other player has left.");
+					System.out.println("Exited.");
+					clientSocket.close();
+					System.exit(0);
+				}
+				System.out.print("\n" + modifiedSentence.charAt(5) + " "
+						+ modifiedSentence.charAt(6) + " "
+						+ modifiedSentence.charAt(7) + "\n"
+						+ modifiedSentence.charAt(8) + " "
+						+ modifiedSentence.charAt(9) + " "
+						+ modifiedSentence.charAt(10) + "\n"
+						+ modifiedSentence.charAt(11) + " "
+						+ modifiedSentence.charAt(12) + " "
+						+ modifiedSentence.charAt(13) + "\n\n");
+				myTurn = true;
+				if (modifiedSentence.contains("p1")) {
+					System.out.println(modifiedSentence.substring(16) + " is the winner.\n");
+					System.out.println("A new game has started.\n");
+				}
+				else if (modifiedSentence.contains("p2")) {
+					System.out.println(modifiedSentence.substring(16) + " is the winner.\n");
+					System.out.println("A new game has started.\n");
+				}
+				else if (modifiedSentence.contains("dw")) {
+					System.out.println("It's a draw.\n");
+					System.out.println("A new game has started.\n");
+				}
+			}
+			
 			System.out.print("Input: ");
 			sentence = inFromUser.readLine();
 			
@@ -52,6 +90,7 @@ class TCPClient {
 						+ "login [USERID] - Logs in with the given user id.\n"
 						+ "place [n] - Makes a move on cell n.\n"
 						+ "exit - Exits the server.");
+				myTurn = true;
 			} else if (modifiedSentence.contains("board")) {
 				System.out.print(modifiedSentence.charAt(5) + " "
 						+ modifiedSentence.charAt(6) + " "
@@ -62,20 +101,46 @@ class TCPClient {
 						+ modifiedSentence.charAt(11) + " "
 						+ modifiedSentence.charAt(12) + " "
 						+ modifiedSentence.charAt(13) + "\n");
+				myTurn = false;
+				if (modifiedSentence.contains("p1")) {
+					System.out.println("\n" + modifiedSentence.substring(16) + " is the winner.\n");
+					System.out.println("A new game has started.");
+				}
+				else if (modifiedSentence.contains("p2")) {
+					System.out.println("\n" + modifiedSentence.substring(16) + " is the winner.\n");
+					System.out.println("A new game has started.");
+				}
+				else if (modifiedSentence.contains("dw")) {
+					System.out.println("\nIt's a draw.\n");
+					System.out.println("A new game has started.");
+				}
 			} else if (modifiedSentence.equals("exit")) {
 				sentence = "exit";
 				System.out.println("Exited.");
 			} else if (modifiedSentence.contains("player1")) {
 				playerNumber = 1;
-				System.out.println("Logged in as Player 1.");
-				System.out.println("Please wait for another player.");
+				System.out.println("Logged in as " + username + ".");
+				System.out.println("Waiting for another player...");
+				modifiedSentence = "";
+				while (!modifiedSentence.contains("begin")) {
+					modifiedSentence = inFromServer.readLine();
+				}
+				System.out.println("Game has begun.");
+				gameBegun = true;
+				myTurn = true;
 			} else if (modifiedSentence.contains("player2")) {
 				playerNumber = 2;
-				System.out.println("Logged in as Player 2.");
+				System.out.println("Logged in as " + username + ".");
+				System.out.println("Game has begun.");
+				gameBegun = true;
+				myTurn = false;
 			} else if (modifiedSentence.contains("Username already is use")) {
 				username = null;
 				System.out.println(modifiedSentence);
-			} else System.out.println(modifiedSentence);
+				myTurn = true;
+			} else {
+				System.out.println(modifiedSentence);
+			}
 			System.out.println();
 		}
 		clientSocket.close();
