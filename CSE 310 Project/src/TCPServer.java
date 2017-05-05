@@ -31,6 +31,7 @@ public class TCPServer implements Runnable {
 		try {
 			String clientSentence;		// message received from client containing command
 			String outputSentence;		// message we'll be sending to client
+			boolean exited = false;		// allows me to exit gracefully (this is super ghetto)
 			
 			// create input stream attached to socket
 			BufferedReader inFromClient = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -372,6 +373,7 @@ public class TCPServer implements Runnable {
 						for (int i = 0; i < allPlayers.size(); i++) {
 							if (allPlayers.get(i).id.equals(tempid)) allPlayers.remove(i);
 						}
+						exited = true;
 					}
 					// player issued an invalid command
 					else outputSentence = "Invalid command.\n";
@@ -379,6 +381,10 @@ public class TCPServer implements Runnable {
 				
 				// write out line to socket
 				outToClient.writeBytes(outputSentence);
+				
+				if (exited) {
+					while (true) {}
+				}
 			}
 		} catch (IOException e) {
 			System.out.println(e);
