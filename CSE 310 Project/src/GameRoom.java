@@ -1,14 +1,20 @@
 public class GameRoom {
-	String[] board = new String[9];
-	int numPlayers = 0;
-	int whosTurn = 0;
+	String[] board = new String[9];		// game board (3x3 grid)
+	int numPlayers = 0;		// number of players (0, 1, or 2)
+	int whosTurn = 0;		// active player (1 for Player 1, 2 for Player 2)
 	Player playerOne;
 	Player playerTwo;
-	String gameid;
-	boolean firstTime;
+	String gameid;		// 3-digit id of game room
+	boolean firstTime;		// first move or not
 	
+	/**
+	 * Default constructor.
+	 */
 	public GameRoom() {}
 	
+	/**
+	 * Game Room constructor with Player 1 arguments.
+	 */
 	public GameRoom(Player playerOne, String gameid) {
 		this.playerOne = playerOne;
 		numPlayers = 1;
@@ -17,6 +23,10 @@ public class GameRoom {
 		firstTime = false;
 	}
 	
+	/**
+	 * Adds a second player to the game room.
+	 * @param playerTwo
+	 */
 	public void addPlayerTwo(Player playerTwo) {
 		this.playerTwo = playerTwo;
 		numPlayers = 2;
