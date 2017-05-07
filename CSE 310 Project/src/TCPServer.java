@@ -18,7 +18,9 @@ public class TCPServer implements Runnable {
 
 	public static void main(String argv[]) throws Exception {
 		// create welcoming socket at port 6789
-		ServerSocket welcomeSocket = new ServerSocket(6789);
+		int port = 6789;
+		if (argv.length >= 1 && argv[0] != null) port = Integer.parseInt(argv[0]);
+		ServerSocket welcomeSocket = new ServerSocket(port);
 		
 		// wait for new connections, upon new connection create a new thread
 		while (true) {

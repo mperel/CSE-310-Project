@@ -11,7 +11,11 @@ class TCPClient {
 		BufferedReader inFromUser = new BufferedReader(new InputStreamReader(System.in));
 	
 		// create client socket, connect to server
-		Socket clientSocket = new Socket("localhost", 6789);
+		String ip = "localhost";
+		if (argv.length >= 1 && argv[0] != null) ip = argv[0];
+		int port = 6789;
+		if (argv.length >= 2 && argv[1] != null) port = Integer.parseInt(argv[1]);
+		Socket clientSocket = new Socket(ip, port);
 	
 		// create output stream attached to socket
 		DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
