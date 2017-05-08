@@ -15,7 +15,14 @@ class TCPClient {
 		if (argv.length >= 1 && argv[0] != null) ip = argv[0];
 		int port = 6789;
 		if (argv.length >= 2 && argv[1] != null) port = Integer.parseInt(argv[1]);
-		Socket clientSocket = new Socket(ip, port);
+		Socket clientSocket = new Socket();
+		try {
+			clientSocket = new Socket(ip, port);
+			System.out.println("200 OK\n");
+		} catch (Exception e) {
+			System.out.println("400 ERROR");
+			System.exit(0);
+		}
 	
 		// create output stream attached to socket
 		DataOutputStream outToServer = new DataOutputStream(clientSocket.getOutputStream());
