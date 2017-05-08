@@ -7,7 +7,7 @@ There are four main files in this project:
   Player.java
   GameRoom.java
   
-These files must all be in the same directory to work.
+Use your favorite archiver to unzip the source files. These files must all be in the same directory to work.
 
 To get the server/client to work, open the command prompt/terminal in the directory where the project is located and execute the following commands:
   javac TCPServer.java/TCPClient.java
